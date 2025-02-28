@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CACM Corpus Search Engine</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">
+                <i class="fas fa-search-plus"></i>
+                <h1>CACM Corpus Search Engine</h1>
+            </div>
+            <div class="theme-toggle">
+                <i class="fas fa-moon" id="theme-toggle-icon"></i>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="search-container">
+            <form class="search-form" id="search-form">
+                <input type="text" class="search-input" id="search-input" placeholder="Enter your search query..." required>
+                <button type="submit" class="search-button">
+                    <i class="fas fa-search"></i> Search
+                </button>
+            </form>
+            <button class="advanced-search-toggle" id="advanced-search-toggle">
+                Advanced Search Options <i class="fas fa-chevron-down" id="toggle-icon"></i>
+            </button>
+            <div class="advanced-search" id="advanced-search">
+                <div class="advanced-options">
+                    <div class="option-group">
+                        <label for="result-limit">Results per page</label>
+                        <select id="result-limit">
+                            <option value="10">10</option>
+                            <option value="20" selected>20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label for="match-type">Match Type</label>
+                        <select id="match-type">
+                            <option value="all" selected>All Words</option>
+                            <option value="any">Any Word</option>
+                            <option value="exact">Exact Phrase</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label for="sort-by">Sort By</label>
+                        <select id="sort-by">
+                            <option value="relevance" selected>Relevance</option>
+                            <option value="date-asc">Date (Oldest First)</option>
+                            <option value="date-desc">Date (Newest First)</option>
+                            <option value="title">Title</option>
+                        </select>
+                    </div>
+                    <div class="option-group">
+                        <label for="min-score">Minimum Score</label>
+                        <input type="range" id="min-score" min="0" max="100" value="0">
+                        <span id="min-score-value">0%</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="sidebar">
+                <div class="filters-card">
+                    <h3><i class="fas fa-filter"></i> Filters</h3>
+                    <div class="filter-group">
+                        <label><i class="fas fa-calendar-alt"></i> Date Range</label>
+                        <div class="date-picker-container">
+                            <div class="date-input-group">
+                                <i class="fas fa-calendar-day"></i>
+                                <input type="date" id="date-range-min" class="date-input" placeholder="From...">
+                            </div>
+                            <div class="date-input-group">
+                                <i class="fas fa-calendar-day"></i>
+                                <input type="date" id="date-range-max" class="date-input" placeholder="To...">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="filter-group">
+                        <label>Popular Terms</label>
+                        <div class="tag-cloud" id="popular-terms">
+                            <!-- Populated dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-card">
+                    <h3><i class="fas fa-chart-bar"></i> Index Statistics</h3>
+                    <div class="stats-item">
+                        <span>Total Documents:</span>
+                        <span id="total-documents">0</span>
+                    </div>
+                    <div class="stats-item">
+                        <span>Unique Terms:</span>
+                        <span id="unique-terms">0</span>
+                    </div>
+                    <div class="stats-item">
+                        <span>Indexed Files:</span>
+                        <span id="indexed-files">0</span>
+                    </div>
+                    <div class="stats-item">
+                        <span>Last Updated:</span>
+                        <span id="last-indexed">-</span>
+                    </div>
+                    <div class="stats-progress-container">
+                        <div class="stats-progress-bar" id="indexing-progress"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-section">
+                <div class="results-container">
+                    <div class="results-header">
+                        <div class="results-count" id="results-count">
+                            No search performed yet
+                        </div>
+                        <div class="sort-options">
+                            <span class="sort-label">Sort by:</span>
+                            <select class="sort-select" id="results-sort">
+                                <option value="relevance" selected>Relevance</option>
+                                <option value="date-asc">Date (Oldest First)</option>
+                                <option value="date-desc">Date (Newest First)</option>
+                                <option value="title">Title</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="loader" id="search-loader"></div>
+                    <div class="status-message" id="status-message">
+                        Enter a search query to begin
+                    </div>
+
+                    <div class="results-grid" id="results-grid">
+                        <!-- Results will be populated here dynamically -->
+                    </div>
+
+                    <div class="pagination" id="pagination">
+                        <!-- Pagination will be populated here dynamically -->
+                    </div>
+                </div>
+
+                <div class="visualization-section">
+                    <div class="visualization-tabs">
+                        <div class="viz-tab active" data-tab="term-frequency">
+                            <i class="fas fa-chart-line"></i> Term Frequency
+                        </div>
+                        <div class="viz-tab" data-tab="document-relevance">
+                            <i class="fas fa-chart-pie"></i> Document Relevance
+                        </div>
+                    </div>
+
+                    <div class="viz-content active" data-content="term-frequency">
+                        <h3>Term Frequency Analysis</h3>
+                        <div class="chart-container">
+                            <canvas class="term-frequency-chart" id="term-frequency-chart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="viz-content" data-content="document-relevance">
+                        <h3>Document Relevance Distribution</h3>
+                        <div class="chart-container">
+                            <canvas class="document-relevance-chart" id="document-relevance-chart"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="document-modal" id="document-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modal-title">Document Title</h2>
+                <button class="close-modal" id="close-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="document-meta" id="document-meta">
+                    <!-- Document metadata will be populated here dynamically -->
+                </div>
+                <div class="document-content-wrapper">
+                    <div class="document-content" id="document-content">
+                        <!-- Document content will be populated here dynamically -->
+                    </div>
+                </div>
+                <div class="similar-documents">
+                    <h4><i class="fas fa-link"></i> Similar Documents</h4>
+                    <div class="similar-list" id="similar-documents-list">
+                        <!-- Similar documents will be populated here dynamically -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-prev-doc" id="prev-doc" disabled>
+                    <i class="fas fa-arrow-left"></i> Previous
+                </button>
+                <button class="btn-next-doc" id="next-doc">
+                    Next <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 CACM Corpus Search Engine</p>
+            <br>
+            <p><i>By <a href="https://www.ianmaloba.com" target="_blank">ian</i></a></p>
+        </div>
+    </footer>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
